@@ -24,16 +24,21 @@ const UserTable = ({ onLogout }) => {
 
   const handleAction = async (action) => {
     try {
+      const usersToActOn = selectedUsers.filter(userId => {
+        const user = users.find(u => u.id === userId);
+        return user && user.email !== loggedInUserEmail;
+      });
+
       if (action === "block") {
-        await api.blockUsers(selectedUsers);
+        await api.blockUsers(usersToActOn);
       } else if (action === "unblock") {
-        await api.unblockUsers(selectedUsers);
+        await api.unblockUsers(usersToActOn);
       } else if (action === "delete") {
-        await api.deleteUsers(selectedUsers);
+        await api.deleteUsers(usersToActOn);
       }
+
       const updatedUsers = await api.getUsers();
-      const filteredUsers = updatedUsers.filter(user => user.email !== loggedInUserEmail);
-      setUsers(filteredUsers);
+      setUsers(updatedUsers);
       setSelectedUsers([]);
     } catch (err) {
       setError(`Failed to ${action} users. Please try again.`);
@@ -83,6 +88,7 @@ const UserTable = ({ onLogout }) => {
                           : prev.filter((id) => id !== user.id)
                       );
                     }}
+                    disabled={user.email === loggedInUserEmail} 
                   />
                 </td>
                 <td>{user.name}</td>
