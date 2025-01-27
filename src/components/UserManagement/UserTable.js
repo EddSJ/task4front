@@ -7,18 +7,23 @@ const UserTable = ({ onLogout }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [error, setError] = useState(null);
 
+  // Supongamos que tienes el email del usuario logueado
+  const loggedInUserEmail = localStorage.getItem('email');
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const data = await api.getUsers();
-        setUsers(data);
+        // Filtra al usuario logueado
+        const filteredUsers = data.filter(user => user.email !== loggedInUserEmail);
+        setUsers(filteredUsers);
       } catch (err) {
         setError("Failed to fetch users. Please try again.");
         console.error(err);
       }
     };
     fetchUsers();
-  }, []);
+  }, [loggedInUserEmail]);
 
   const handleAction = async (action) => {
     try {
@@ -30,7 +35,8 @@ const UserTable = ({ onLogout }) => {
         await api.deleteUsers(selectedUsers);
       }
       const updatedUsers = await api.getUsers();
-      setUsers(updatedUsers);
+      const filteredUsers = updatedUsers.filter(user => user.email !== loggedInUserEmail);
+      setUsers(filteredUsers);
       setSelectedUsers([]);
     } catch (err) {
       setError(`Failed to ${action} users. Please try again.`);
@@ -84,7 +90,7 @@ const UserTable = ({ onLogout }) => {
                 </td>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
-                <td>{user.lastLogin}</td>
+                <td>{user.last_login || "N/A"}</td>
                 <td>{user.status}</td>
               </tr>
             ))}

@@ -26,7 +26,7 @@ const RegisterForm = () => {
       Swal.fire({
         icon: "error",
         title: "Registration failed",
-        text: error.response?.data?.message || "Please try again.",
+        text: error?.message || "Please try again.",
         confirmButtonText: "Retry",
       });
     }
