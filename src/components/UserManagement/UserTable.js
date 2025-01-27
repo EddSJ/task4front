@@ -21,56 +21,64 @@ const UserTable = ({ onLogout }) => {
   }, []);
 
   return (
-    <div>
+    <div className="container mt-4">
       <Toolbar
         selectedUsers={selectedUsers}
         onAction={(action) => console.log(`${action} action on`, selectedUsers)}
       />
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                onChange={(e) =>
-                  setSelectedUsers(
-                    e.target.checked ? users.map((u) => u.id) : []
-                  )
-                }
-              />
-            </th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Last Login</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>
+      
+      <div className="table-responsive">
+        <table className="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>
                 <input
                   type="checkbox"
-                  checked={selectedUsers.includes(user.id)}
-                  onChange={(e) => {
-                    setSelectedUsers((prev) =>
-                      e.target.checked
-                        ? [...prev, user.id]
-                        : prev.filter((id) => id !== user.id)
-                    );
-                  }}
+                  onChange={(e) =>
+                    setSelectedUsers(
+                      e.target.checked ? users.map((u) => u.id) : []
+                    )
+                  }
                 />
-              </td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.lastLogin}</td>
-              <td>{user.status}</td>
+              </th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Last Login</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={onLogout}>Logout</button>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(user.id)}
+                    onChange={(e) => {
+                      setSelectedUsers((prev) =>
+                        e.target.checked
+                          ? [...prev, user.id]
+                          : prev.filter((id) => id !== user.id)
+                      );
+                    }}
+                  />
+                </td>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.lastLogin}</td>
+                <td>{user.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+  
+      <div className="d-grid mt-3">
+        <button onClick={onLogout} className="btn btn-danger">
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
