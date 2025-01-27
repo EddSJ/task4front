@@ -7,16 +7,13 @@ const UserTable = ({ onLogout }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [error, setError] = useState(null);
 
-  // Supongamos que tienes el email del usuario logueado
   const loggedInUserEmail = localStorage.getItem('email');
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const data = await api.getUsers();
-        // Filtra al usuario logueado
-        const filteredUsers = data.filter(user => user.email !== loggedInUserEmail);
-        setUsers(filteredUsers);
+        setUsers(data);
       } catch (err) {
         setError("Failed to fetch users. Please try again.");
         console.error(err);

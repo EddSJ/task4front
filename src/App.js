@@ -8,7 +8,6 @@ import './App.css';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Verifica si el token existe en localStorage al cargar la página
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -30,7 +29,6 @@ const App = () => {
     <Router>
       <div className="App">
         <Routes>
-          {/* Rutas públicas */}
           <Route
             path="/login"
             element={
@@ -52,7 +50,6 @@ const App = () => {
             }
           />
 
-          {/* Ruta protegida */}
           <Route
             path="/user-management"
             element={
@@ -64,7 +61,6 @@ const App = () => {
             }
           />
 
-          {/* Redirigir cualquier otra ruta */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
