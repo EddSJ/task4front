@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Toolbar from "./Toolbar";
-import api from "../../services/api"; // Importa el servicio correctamente
+import api from "../../services/api";
 
 const UserTable = ({ onLogout }) => {
   const [users, setUsers] = useState([]);
@@ -10,7 +10,7 @@ const UserTable = ({ onLogout }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await api.getUsers(); // Usa el método `getUsers` del servicio
+        const data = await api.getUsers();
         setUsers(data);
       } catch (err) {
         setError("Failed to fetch users. Please try again.");
@@ -20,14 +20,32 @@ const UserTable = ({ onLogout }) => {
     fetchUsers();
   }, []);
 
+  const handleAction = async (action) => {
+    try {
+      if (action === "block") {
+        await api.blockUsers(selectedUsers);
+      } else if (action === "unblock") {
+        await api.unblockUsers(selectedUsers);
+      } else if (action === "delete") {
+        await api.deleteUsers(selectedUsers);
+      }
+      const updatedUsers = await api.getUsers();
+      setUsers(updatedUsers);
+      setSelectedUsers([]);
+    } catch (err) {
+      setError(`Failed to ${action} users. Please try again.`);
+      console.error(err);
+    }
+  };
+
   return (
     <div className="container mt-4">
       <Toolbar
         selectedUsers={selectedUsers}
-        onAction={(action) => console.log(`${action} action on`, selectedUsers)}
+        onAction={handleAction}
       />
       {error && <p style={{ color: "red" }}>{error}</p>}
-      
+
       <div className="table-responsive">
         <table className="table table-striped table-bordered">
           <thead>
@@ -73,7 +91,7 @@ const UserTable = ({ onLogout }) => {
           </tbody>
         </table>
       </div>
-  
+
       <div className="d-grid mt-3">
         <button onClick={onLogout} className="btn btn-danger">
           Logout

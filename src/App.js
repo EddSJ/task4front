@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LoginForm from "./components/Auth/LoginForm";
 import RegisterForm from "./components/Auth/RegisterForm";
@@ -7,11 +7,21 @@ import UserManagement from "./components/UserManagement/UserTable";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Verifica si el token existe en localStorage al cargar la página
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
     setIsAuthenticated(false);
   };
 

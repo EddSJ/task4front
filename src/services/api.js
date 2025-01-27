@@ -23,9 +23,9 @@ const api = {
         password 
       });
       
-      // Store token in localStorage
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
+        localStorage.setItem('email', response.data.email);
       }
       
       return response.data;
@@ -56,6 +56,19 @@ const api = {
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : new Error('Failed to block users');
+    }
+  },
+
+  unblockUsers: async (userIds) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${API_URL}/users/unblock`, 
+        { userIds },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : new Error('Failed to unblock users');
     }
   },
 
