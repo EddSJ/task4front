@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
-const LoginForm = ({ onLogin, onSwitchToRegister  }) => {
+const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await api.login(email, password);
-      onLogin();
+      onLogin(); // Actualiza el estado de autenticación
+      navigate("/user-management"); // Redirige a la gestión de usuarios
     } catch (error) {
       alert("Login failed: " + (error.message || "Unknown error"));
     }
@@ -33,7 +36,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister  }) => {
       <button type="submit">Login</button>
       <p>
         Don't have an account?{" "}
-        <button type="button" onClick={onSwitchToRegister}>
+        <button type="button" onClick={() => navigate("/register")}>
           Register here
         </button>
       </p>

@@ -1,16 +1,19 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
-const RegisterForm = ({ onSwitchToLogin }) => {
+const RegisterForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.register(name, email, password); // Usa await para resolver la promesa
+      const response = await api.register(name, email, password);
       alert("Registration successful. User ID: " + response.userId);
+      navigate("/login"); // Redirige al formulario de login
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Registration failed. Please try again.";
@@ -42,7 +45,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
       <button type="submit">Register</button>
       <p>
         Already have an account?{" "}
-        <button type="button" onClick={onSwitchToLogin}>
+        <button type="button" onClick={() => navigate("/login")}>
           Login here
         </button>
       </p>
