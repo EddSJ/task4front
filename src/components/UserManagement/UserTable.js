@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Toolbar from "./Toolbar";
 import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
 
 const UserTable = ({ onLogout }) => {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const loggedInUserEmail = localStorage.getItem('email');
 
@@ -15,6 +19,10 @@ const UserTable = ({ onLogout }) => {
         const data = await api.getUsers();
         setUsers(data);
       } catch (err) {
+        if (err.message === "Account is blocked") {
+          handleBlockedAccount()
+          return;
+        }
         setError("Failed to fetch users. Please try again.");
         console.error(err);
       }
@@ -22,27 +30,47 @@ const UserTable = ({ onLogout }) => {
     fetchUsers();
   }, [loggedInUserEmail]);
 
+  const handleBlockedAccount = () => {
+      localStorage.setItem('blockedAccount', true);
+      localStorage.removeItem("token");
+      localStorage.removeItem("email");
+      window.location.reload();
+  }
+
   const handleAction = async (action) => {
     try {
-      const usersToActOn = selectedUsers.filter(userId => {
-        const user = users.find(u => u.id === userId);
-        return user && user.email !== loggedInUserEmail;
-      });
+      const usersToActOn = selectedUsers
+      let updatedRecords = null
 
       if (action === "block") {
         await api.blockUsers(usersToActOn);
+        updatedRecords = users.map(user => {
+          if (selectedUsers.includes(user.id)) {
+            return { ...user, status: "blocked" };
+          }
+          return user;
+        });
       } else if (action === "unblock") {
         await api.unblockUsers(usersToActOn);
+        updatedRecords = users.map(user => {
+          if (selectedUsers.includes(user.id)) {
+            return { ...user, status: "active" };
+          }
+          return user;
+        });
       } else if (action === "delete") {
         await api.deleteUsers(usersToActOn);
       }
 
-      const updatedUsers = await api.getUsers();
-      setUsers(updatedUsers);
+      setUsers(updatedRecords);
       setSelectedUsers([]);
     } catch (err) {
+      if (err.message === "Account is blocked") {
+        handleBlockedAccount()
+        return;
+      }
       setError(`Failed to ${action} users. Please try again.`);
-      console.error(err);
+      console.error("si esta pasando aqui ", err);
     }
   };
 
@@ -88,7 +116,6 @@ const UserTable = ({ onLogout }) => {
                           : prev.filter((id) => id !== user.id)
                       );
                     }}
-                    disabled={user.email === loggedInUserEmail} 
                   />
                 </td>
                 <td>{user.name}</td>

@@ -4,14 +4,26 @@ import LoginForm from "./components/Auth/LoginForm";
 import RegisterForm from "./components/Auth/RegisterForm";
 import UserManagement from "./components/UserManagement/UserTable";
 import './App.css';
+import Swal from "sweetalert2";
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const blockeAccount = localStorage.getItem("blockedAccount");
     if (token) {
       setIsAuthenticated(true);
+    } else if (blockeAccount) {
+      Swal.fire({
+        icon: "error",
+        title: "Restricted Action",
+        text: "Account is blocked",
+        confirmButtonText: "OK",
+      }).then(() => {
+        localStorage.removeItem("blockedAccount");
+      });
     }
   }, []);
 
