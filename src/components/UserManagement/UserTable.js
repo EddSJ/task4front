@@ -60,6 +60,7 @@ const UserTable = ({ onLogout }) => {
         });
       } else if (action === "delete") {
         await api.deleteUsers(usersToActOn);
+        updatedRecords = users.filter(user => !selectedUsers.includes(user.id));
       }
 
       setUsers(updatedRecords);
